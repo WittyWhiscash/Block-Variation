@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.0.0'
+version = '1.0.1'
 group = 'mod.wittywhiscash.blockvariation' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'blockvariation'
 
@@ -91,7 +91,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.15.2-31.2.0'
 
-    implementation("blue.endless:jankson:1.1.+")
+
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
