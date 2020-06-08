@@ -9,8 +9,11 @@ public class BlockList {
 
     // The block mask. Will be parsed into a block on load.
     private String mask;
+    private static String defaultMask = Blocks.STONE.getRegistryName().toString();
+
     // A map of blocks and their chances of spawning. All values SHOULD match up to 100.
     private HashMap<String, Double> blockChanceMap = new HashMap<String, Double>();
+    private static HashMap<String, Double> defaultChanceMap = new HashMap<String, Double>();
 
     public String getMask() {
         return mask;
@@ -20,15 +23,18 @@ public class BlockList {
         return blockChanceMap;
     }
 
-    public class DefaultBlockList extends BlockList {
+    public BlockList() { }
 
-        public DefaultBlockList() {
-            mask = String.format("%s:%2s", Blocks.STONE.getRegistryName().getNamespace(), Blocks.STONE.getRegistryName().getPath());
-            blockChanceMap.put(String.format("%s:%2s", Blocks.STONE.getRegistryName().getNamespace(), Blocks.STONE.getRegistryName().getPath()), 0.5);
-            blockChanceMap.put(String.format("%s:%2s", Blocks.MOSSY_COBBLESTONE.getRegistryName().getNamespace(), Blocks.MOSSY_COBBLESTONE.getRegistryName().getPath()), 0.25);
-            blockChanceMap.put(String.format("%s:%2s", Blocks.COBBLESTONE.getRegistryName().getNamespace(), Blocks.COBBLESTONE.getRegistryName().getPath()), 0.25);
+    public BlockList(String mask, HashMap<String, Double> blockChanceMap) {
+        this.mask = mask;
+        this.blockChanceMap = blockChanceMap;
+    }
 
-        }
+    public BlockList createDefaultBlockList() {
+        defaultChanceMap.put(Blocks.STONE.getRegistryName().toString(), 0.5);
+        defaultChanceMap.put(Blocks.COBBLESTONE.getRegistryName().toString(), 0.25);
+        defaultChanceMap.put(Blocks.MOSSY_COBBLESTONE.getRegistryName().toString(), 0.25);
+        return new BlockList(defaultMask, defaultChanceMap);
     }
 
 }

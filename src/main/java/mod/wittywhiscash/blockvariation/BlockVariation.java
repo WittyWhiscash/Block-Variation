@@ -33,7 +33,7 @@ public class BlockVariation {
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "blockvariation";
-    public static HashMap<Block, HashMap<Block, Double>> list = new HashMap<>();
+    private static HashMap<Block, HashMap<Block, Double>> list = new HashMap<>();
 
     public BlockVariation() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -65,7 +65,7 @@ public class BlockVariation {
         if (!Files.exists(exampleJson)) {
             try {
                 writer = Files.newBufferedWriter(exampleJson);
-                gson.toJson(new BlockList().new DefaultBlockList(), writer);
+                gson.toJson(new BlockList().createDefaultBlockList(), writer);
                 writer.close();
             } catch (IOException exception) {
                 LOGGER.error(exception);
