@@ -1,10 +1,8 @@
 package mod.wittywhiscash.blockvariation;
 
-import blue.endless.jankson.Jankson;
-import blue.endless.jankson.JsonGrammar;
-import blue.endless.jankson.JsonObject;
-import blue.endless.jankson.impl.SyntaxError;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import mod.wittywhiscash.blockvariation.feature.BlockVariationFeature;
 import net.minecraft.block.Block;
 import net.minecraft.world.gen.GenerationStage;
@@ -21,6 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class BlockVariation {
     private void setup(final FMLCommonSetupEvent event) {
 
         // Initialize JSON parser and get configuration file paths.
-        Jankson jankson = new Jankson.Builder().build();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File configurationDirectory = FMLPaths.CONFIGDIR.get().toFile();
         Path configurationPath = Paths.get(configurationDirectory.toString(), MOD_ID);
 
@@ -59,15 +58,14 @@ public class BlockVariation {
         }
 
         // Define path for the example file.
-        Path exampleJson = Paths.get(configurationPath.toString(), "example.hjson");
+        Path exampleJson = Paths.get(configurationPath.toString(), "example.json");
 
         // If the file does not exist, create it.
         BufferedWriter writer = null;
         if (!Files.exists(exampleJson)) {
             try {
                 writer = Files.newBufferedWriter(exampleJson);
-                String json = jankson.toJson(new DefaultBlockList()).toJson(JsonGrammar.JANKSON);
-                writer.write(json);
+                gson.toJson(new BlockList().new DefaultBlockList(), writer);
                 writer.close();
             } catch (IOException exception) {
                 LOGGER.error(exception);
@@ -78,8 +76,8 @@ public class BlockVariation {
             // Find all files that the user has put in the configuration directory and parse them for feature registration, excluding the example.
             File[] fileList = configurationPath.toFile().listFiles(file -> !file.equals(exampleJson.toFile()));
             for (File file : fileList) {
-                JsonObject json = jankson.load(file);
-                BlockList blockList = jankson.fromJson(json, BlockList.class);
+                BufferedReader reader = Files.newBufferedReader(file.toPath());
+                BlockList blockList = gson.fromJson(reader, BlockList.class);
                 HashMap<Block, Double> parsedBlockChanceMap = new HashMap<>();
                 Block maskBlock = Util.parseBlockFromString(blockList.getMask());
                 for (String key : blockList.getBlockChanceMap().keySet()) {
@@ -97,9 +95,6 @@ public class BlockVariation {
             }
         } catch (IOException exception) {
             LOGGER.error(exception);
-        } catch (SyntaxError error) {
-            LOGGER.error(error.getMessage());
-            LOGGER.error(error.getLineMessage());
         }
 
         // Register the worldgen feature that makes the magic happen.
